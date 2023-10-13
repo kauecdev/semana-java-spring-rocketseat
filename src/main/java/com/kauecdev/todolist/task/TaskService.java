@@ -22,7 +22,6 @@ public class TaskService {
             validateTaskRequest(taskRequest);
 
             Task task = Task.builder()
-                .title(taskRequest.getTitle())
                 .description(taskRequest.getDescription())
                 .priority(taskRequest.getPriority())
                 .startAt(taskRequest.getStartAt())
@@ -30,9 +29,11 @@ public class TaskService {
                 .userId((UUID) userId)
                 .build();
 
-        Task createdTask = this.taskRepository.save(task);
+            task.setTitle(taskRequest.getTitle());
 
-        return createdTask.getId();
+            Task createdTask = this.taskRepository.save(task);
+
+            return createdTask.getId();
         } catch (InvalidTaskRequestException e) {
             throw e;
         } catch (Exception e) {
@@ -40,7 +41,7 @@ public class TaskService {
         }
     }
 
-    public UUID update(TaskRequest taskRequest, UUID taskId) {
+    public UUID update(TaskRequest taskRequest, UUID taskId, UUID userId) {
         try {
             Optional<Task> existingTaskFound = this.taskRepository.findById(taskId);
 
@@ -49,6 +50,10 @@ public class TaskService {
             }
 
             Task existingTask = existingTaskFound.get();
+
+            if (!existingTask.getUserId().equals(userId)) {
+                throw new InvalidTaskRequestException("Usuário não tem permissão para alterar essa tarefa.");
+            }
 
             validateTaskRequest(taskRequest);
 

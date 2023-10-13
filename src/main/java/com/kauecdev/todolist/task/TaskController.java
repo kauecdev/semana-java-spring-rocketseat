@@ -51,7 +51,9 @@ public class TaskController {
     @PutMapping("/{id}")
     public ResponseEntity<Object> update(@RequestBody TaskRequest taskRequest, @PathVariable UUID id, HttpServletRequest request) {
         try {
-            UUID createdTaskId = this.taskService.update(taskRequest, id);
+            UUID userId = (UUID) request.getAttribute("userId");
+
+            UUID createdTaskId = this.taskService.update(taskRequest, id, userId);
             
             return ResponseEntity.status(HttpStatus.CREATED).body(createdTaskId);
         } catch (TaskNotFoundException e) {

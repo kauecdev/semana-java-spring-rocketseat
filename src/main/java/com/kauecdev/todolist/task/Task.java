@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.kauecdev.todolist.exception.InvalidTaskRequestException;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,4 +42,11 @@ public class Task {
 
     private UUID userId;
 
+    public void setTitle(String title) throws InvalidTaskRequestException {
+        if (title.length() > 50) {
+            throw new InvalidTaskRequestException("O campo title deve conter no máximo 50 caracteres.");
+        }
+
+        this.title = title;
+    }
 }
